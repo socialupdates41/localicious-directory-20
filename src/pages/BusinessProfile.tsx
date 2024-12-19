@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { BusinessCard } from "@/components/BusinessCard";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import { LocationFilter } from "@/components/LocationFilter";
 
 const BusinessProfile = () => {
   const { id } = useParams();
@@ -16,6 +17,11 @@ const BusinessProfile = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
+      <div className="bg-gray-50 py-4">
+        <div className="container max-w-6xl mx-auto px-4">
+          <LocationFilter />
+        </div>
+      </div>
       <main className="flex-grow">
         <div className="container max-w-6xl mx-auto py-8 px-4">
           {/* Main Business Info */}
