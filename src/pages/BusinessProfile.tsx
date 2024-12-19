@@ -3,6 +3,8 @@ import { Star, MapPin, Globe, Phone, Clock } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { BusinessCard } from "@/components/BusinessCard";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
 
 const BusinessProfile = () => {
   const { id } = useParams();
@@ -12,10 +14,12 @@ const BusinessProfile = () => {
   const suggestedBusinesses = mockBusinesses.filter((b) => b.id !== id).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container max-w-6xl mx-auto py-8 px-4">
-        {/* Main Business Info */}
-        <Card className="mb-8">
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navigation />
+      <main className="flex-grow">
+        <div className="container max-w-6xl mx-auto py-8 px-4">
+          {/* Main Business Info */}
+          <Card className="mb-8">
           <div className="relative h-64 md:h-96">
             <img
               src={business.image}
@@ -70,23 +74,24 @@ const BusinessProfile = () => {
             )}
             <p className="text-muted-foreground mt-4">{business.description}</p>
           </CardContent>
-        </Card>
+          </Card>
 
-        {/* Suggested Businesses */}
-        <section className="mt-16">
-          <h2 className="text-2xl font-bold mb-6">Similar Businesses</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {suggestedBusinesses.map((business) => (
-              <BusinessCard key={business.id} {...business} />
-            ))}
-          </div>
-        </section>
-      </div>
+          {/* Suggested Businesses */}
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold mb-6">Similar Businesses</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {suggestedBusinesses.map((business) => (
+                <BusinessCard key={business.id} {...business} />
+              ))}
+            </div>
+          </section>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 };
 
-// Mock data (in a real app, this would come from an API)
 export const mockBusinesses = [
   {
     id: "1",
