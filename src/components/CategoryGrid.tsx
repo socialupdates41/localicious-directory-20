@@ -1,10 +1,10 @@
-import { Building2, Coffee, Utensils, Shopping, Hotel, Car } from "lucide-react";
+import { Building2, Coffee, Utensils, ShoppingBag, Hotel, Car } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const categories = [
   { name: "Restaurants", icon: Utensils },
   { name: "Cafes", icon: Coffee },
-  { name: "Shopping", icon: Shopping },
+  { name: "Shopping", icon: ShoppingBag },
   { name: "Hotels", icon: Hotel },
   { name: "Services", icon: Building2 },
   { name: "Auto", icon: Car },
