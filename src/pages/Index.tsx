@@ -2,37 +2,16 @@ import { SearchBar } from "@/components/SearchBar";
 import { LocationFilter } from "@/components/LocationFilter";
 import { CategoryGrid } from "@/components/CategoryGrid";
 import { BusinessCard } from "@/components/BusinessCard";
+import { useNavigate } from "react-router-dom";
+import { mockBusinesses } from "./BusinessProfile";
 
 const Index = () => {
-  // Mock data for demonstration
-  const featuredBusinesses = [
-    {
-      name: "The Coffee House",
-      category: "Cafe",
-      rating: 4.5,
-      reviews: 128,
-      address: "123 Main St, San Francisco, CA",
-      image: "https://images.unsplash.com/photo-1554118811-1e0d58224f24",
-      isPremium: true,
-    },
-    {
-      name: "Golden Gate Restaurant",
-      category: "Restaurant",
-      rating: 4.2,
-      reviews: 89,
-      address: "456 Market St, San Francisco, CA",
-      image: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4",
-      isPremium: true,
-    },
-    {
-      name: "City Fitness Center",
-      category: "Gym",
-      rating: 4.8,
-      reviews: 256,
-      address: "789 Fitness Ave, San Francisco, CA",
-      image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48",
-    },
-  ];
+  const navigate = useNavigate();
+  const featuredBusinesses = mockBusinesses.filter(business => business.isPremium);
+
+  const handleBusinessClick = (businessId: string) => {
+    navigate(`/business/${businessId}`);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -66,7 +45,13 @@ const Index = () => {
           <h2 className="text-3xl font-bold mb-8">Featured Businesses</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredBusinesses.map((business) => (
-              <BusinessCard key={business.name} {...business} />
+              <div
+                key={business.id}
+                onClick={() => handleBusinessClick(business.id)}
+                className="cursor-pointer"
+              >
+                <BusinessCard {...business} />
+              </div>
             ))}
           </div>
         </div>
