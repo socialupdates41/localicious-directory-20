@@ -5,7 +5,14 @@ import { Badge } from "@/components/ui/badge";
 import { BusinessCard } from "@/components/BusinessCard";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import { LocationFilter } from "@/components/LocationFilter";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const BusinessProfile = () => {
   const { id } = useParams();
@@ -14,12 +21,36 @@ const BusinessProfile = () => {
   const business = mockBusinesses.find((b) => b.id === id) || mockBusinesses[0];
   const suggestedBusinesses = mockBusinesses.filter((b) => b.id !== id).slice(0, 3);
 
+  // Extract location parts from the address
+  const addressParts = business.address.split(", ");
+  const city = addressParts[1];
+  const stateAndZip = addressParts[2].split(" ");
+  const state = stateAndZip[0];
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       <div className="bg-gray-50 py-4">
         <div className="container max-w-6xl mx-auto px-4">
-          <LocationFilter />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">United States</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">{state}</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/">{city}</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>{business.name}</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
       </div>
       <main className="flex-grow">
