@@ -1,11 +1,10 @@
 import { Link, Outlet } from "react-router-dom";
-import { LayoutDashboard, Building2, Tags, MapPin } from "lucide-react";
+import { LayoutDashboard, Building2, Tags, MapPin, Upload } from "lucide-react";
 
 const AdminLayout = () => {
   return (
     <div className="min-h-screen bg-background">
       <div className="flex">
-        {/* Sidebar */}
         <aside className="w-64 bg-gray-50 border-r min-h-screen p-4">
           <div className="mb-8">
             <Link to="/" className="text-xl font-bold text-primary">
@@ -28,6 +27,13 @@ const AdminLayout = () => {
               Businesses
             </Link>
             <Link
+              to="/admin/bulk-upload"
+              className="flex items-center gap-2 p-2 hover:bg-accent rounded-md"
+            >
+              <Upload className="w-4 h-4" />
+              Bulk Upload
+            </Link>
+            <Link
               to="/admin/categories"
               className="flex items-center gap-2 p-2 hover:bg-accent rounded-md"
             >
@@ -44,7 +50,6 @@ const AdminLayout = () => {
           </nav>
         </aside>
 
-        {/* Main Content */}
         <main className="flex-1 p-8">
           <Outlet />
         </main>
