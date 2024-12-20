@@ -11,34 +11,52 @@ import BulkUpload from "./pages/admin/BulkUpload";
 function App() {
   return (
     <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route
-          path="/"
-          element={
-            <>
-              <Navigation />
-              <Index />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/business/:id"
-          element={
-            <>
-              <BusinessProfile />
-            </>
-          }
-        />
+      <div className="min-h-screen flex flex-col">
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/"
+            element={
+              <>
+                <Navigation />
+                <main className="flex-grow">
+                  <Index />
+                </main>
+                <Footer />
+              </>
+            }
+          />
+          <Route
+            path="/business/:id"
+            element={
+              <>
+                <Navigation />
+                <main className="flex-grow">
+                  <BusinessProfile />
+                </main>
+                <Footer />
+              </>
+            }
+          />
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="businesses" element={<BusinessManagement />} />
-          <Route path="bulk-upload" element={<BulkUpload />} />
-        </Route>
-      </Routes>
+          {/* Admin Routes */}
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="businesses" element={<BusinessManagement />} />
+            <Route path="bulk-upload" element={<BulkUpload />} />
+          </Route>
+
+          {/* Catch-all route for 404 */}
+          <Route
+            path="*"
+            element={
+              <div className="flex items-center justify-center min-h-screen">
+                <h1 className="text-2xl">404 - Page Not Found</h1>
+              </div>
+            }
+          />
+        </Routes>
+      </div>
     </Router>
   );
 }
