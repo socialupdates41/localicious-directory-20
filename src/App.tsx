@@ -1,28 +1,44 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
 import Index from "./pages/Index";
 import BusinessProfile from "./pages/BusinessProfile";
+import AdminLayout from "./components/admin/AdminLayout";
+import Dashboard from "./pages/admin/Dashboard";
 import BusinessManagement from "./pages/admin/BusinessManagement";
 
-const queryClient = new QueryClient();
+function App() {
+  return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={
+            <>
+              <Navigation />
+              <Index />
+              <Footer />
+            </>
+          }
+        />
+        <Route
+          path="/business/:id"
+          element={
+            <>
+              <BusinessProfile />
+            </>
+          }
+        />
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/business/:id" element={<BusinessProfile />} />
-          <Route path="/admin/businesses" element={<BusinessManagement />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+        {/* Admin Routes */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="businesses" element={<BusinessManagement />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -9,14 +9,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { mockBusinesses } from "@/pages/BusinessProfile";
 import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/hooks/use-toast";
+import { mockBusinesses } from "../BusinessProfile";
 
 const BusinessManagement = () => {
-  const [businesses] = useState(mockBusinesses);
+  const [businesses, setBusinesses] = useState(mockBusinesses);
+  const { toast } = useToast();
+
+  const handlePromote = (businessId: string) => {
+    setBusinesses(
+      businesses.map((business) =>
+        business.id === businessId
+          ? { ...business, isPremium: !business.isPremium }
+          : business
+      )
+    );
+    toast({
+      title: "Business status updated",
+      description: "The business promotion status has been updated successfully.",
+    });
+  };
+
+  const handleDelete = (businessId: string) => {
+    setBusinesses(businesses.filter((business) => business.id !== businessId));
+    toast({
+      title: "Business deleted",
+      description: "The business has been deleted successfully.",
+    });
+  };
 
   return (
-    <div className="p-8">
+    <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Business Management</h1>
         <Button>
@@ -50,10 +74,27 @@ const BusinessManagement = () => {
                   )}
                 </TableCell>
                 <TableCell className="text-right">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="mr-2"
+                    onClick={() => handlePromote(business.id)}
+                  >
+                    <Star
+                      className={`w-4 h-4 ${
+                        business.isPremium ? "fill-yellow-400" : ""
+                      }`}
+                    />
+                  </Button>
                   <Button variant="ghost" size="icon" className="mr-2">
                     <Pencil className="w-4 h-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="text-destructive">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-destructive"
+                    onClick={() => handleDelete(business.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </TableCell>
