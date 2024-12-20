@@ -1,127 +1,29 @@
 import { useParams } from "react-router-dom";
-import { Star, MapPin, Globe, Phone, Clock } from "lucide-react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BusinessCard } from "@/components/BusinessCard";
+import { BusinessDetails } from "@/components/business/BusinessDetails";
+import { LocationBreadcrumb } from "@/components/business/LocationBreadcrumb";
+import { SimilarBusinesses } from "@/components/business/SimilarBusinesses";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 
 const BusinessProfile = () => {
   const { id } = useParams();
-
-  // In a real app, this would fetch from an API
   const business = mockBusinesses.find((b) => b.id === id) || mockBusinesses[0];
-  const suggestedBusinesses = mockBusinesses.filter((b) => b.id !== id).slice(0, 3);
-
-  // Extract location parts from the address
-  const addressParts = business.address.split(", ");
-  const city = addressParts[1];
-  const stateAndZip = addressParts[2].split(" ");
-  const state = stateAndZip[0];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Navigation />
       <div className="bg-gray-50 py-4">
         <div className="container max-w-6xl mx-auto px-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">United States</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">{state}</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink href="/">{city}</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{business.name}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <LocationBreadcrumb 
+            businessName={business.name}
+            address={business.address}
+          />
         </div>
       </div>
       <main className="flex-grow">
         <div className="container max-w-6xl mx-auto py-8 px-4">
-          {/* Main Business Info */}
-          <Card className="mb-8">
-          <div className="relative h-64 md:h-96">
-            <img
-              src={business.image}
-              alt={business.name}
-              className="w-full h-full object-cover"
-            />
-            {business.isPremium && (
-              <Badge className="absolute top-4 right-4 bg-accent">
-                Premium
-              </Badge>
-            )}
-          </div>
-          <CardHeader className="p-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{business.name}</h1>
-                <div className="flex items-center gap-2 text-muted-foreground mb-4">
-                  <Star className="w-5 h-5 fill-accent text-accent" />
-                  <span className="text-lg">{business.rating}</span>
-                  <span>({business.reviews} reviews)</span>
-                </div>
-              </div>
-              <Badge variant="secondary" className="text-lg">
-                {business.category}
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="p-6 pt-0 space-y-4">
-            <div className="flex items-start gap-2">
-              <MapPin className="w-5 h-5 mt-1" />
-              <span>{business.address}</span>
-            </div>
-            {business.website && (
-              <div className="flex items-start gap-2">
-                <Globe className="w-5 h-5 mt-1" />
-                <a href={business.website} className="text-primary hover:underline">
-                  {business.website}
-                </a>
-              </div>
-            )}
-            {business.phone && (
-              <div className="flex items-start gap-2">
-                <Phone className="w-5 h-5 mt-1" />
-                <span>{business.phone}</span>
-              </div>
-            )}
-            {business.hours && (
-              <div className="flex items-start gap-2">
-                <Clock className="w-5 h-5 mt-1" />
-                <span>{business.hours}</span>
-              </div>
-            )}
-            <p className="text-muted-foreground mt-4">{business.description}</p>
-          </CardContent>
-          </Card>
-
-          {/* Suggested Businesses */}
-          <section className="mt-16">
-            <h2 className="text-2xl font-bold mb-6">Similar Businesses</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {suggestedBusinesses.map((business) => (
-                <BusinessCard key={business.id} {...business} />
-              ))}
-            </div>
-          </section>
+          <BusinessDetails business={business} />
+          <SimilarBusinesses currentBusinessId={business.id} />
         </div>
       </main>
       <Footer />
@@ -129,6 +31,7 @@ const BusinessProfile = () => {
   );
 };
 
+// Mock data moved to a separate file but kept here for now to maintain functionality
 export const mockBusinesses = [
   {
     id: "1",
