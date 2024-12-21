@@ -1,38 +1,14 @@
 import { useParams } from "react-router-dom";
+import { Phone, Globe } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { BusinessDetails } from "@/components/business/BusinessDetails";
 import { LocationBreadcrumb } from "@/components/business/LocationBreadcrumb";
 import { SimilarBusinesses } from "@/components/business/SimilarBusinesses";
+import { UserReviews } from "@/components/business/UserReviews";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
-const BusinessProfile = () => {
-  const { id } = useParams();
-  const business = mockBusinesses.find((b) => b.id === id) || mockBusinesses[0];
-
-  return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Navigation />
-      <div className="bg-gray-50 py-4">
-        <div className="container max-w-6xl mx-auto px-4">
-          <LocationBreadcrumb 
-            businessName={business.name}
-            address={business.address}
-          />
-        </div>
-      </div>
-      <main className="flex-grow">
-        <div className="container max-w-6xl mx-auto py-8 px-4">
-          <BusinessDetails business={business} />
-          <SimilarBusinesses currentBusinessId={business.id} />
-        </div>
-      </main>
-      <Footer />
-    </div>
-  );
-};
-
-// Mock data moved to a separate file but kept here for now to maintain functionality
-export const mockBusinesses = [
+const mockBusinesses = [
   {
     id: "1",
     name: "The Coffee House",
@@ -118,5 +94,67 @@ export const mockBusinesses = [
     isPremium: false,
   }
 ];
+
+const mockReviews = [
+  {
+    id: "1",
+    userName: "John Doe",
+    rating: 5,
+    comment: "Amazing experience! The service was outstanding.",
+    date: "2024-02-15",
+    helpful: 12,
+  },
+  {
+    id: "2",
+    userName: "Jane Smith",
+    rating: 4,
+    comment: "Great place, would definitely recommend.",
+    date: "2024-02-10",
+    helpful: 8,
+  },
+];
+
+const BusinessProfile = () => {
+  const { id } = useParams();
+  const business = mockBusinesses.find((b) => b.id === id) || mockBusinesses[0];
+
+  return (
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navigation />
+      <div className="bg-accent/10 py-4">
+        <div className="container max-w-6xl mx-auto px-4">
+          <LocationBreadcrumb 
+            businessName={business.name}
+            address={business.address}
+          />
+        </div>
+      </div>
+      <main className="flex-grow">
+        <div className="container max-w-6xl mx-auto py-8 px-4">
+          <BusinessDetails business={business} />
+          
+          <div className="mt-8 flex gap-4 justify-center">
+            {business.phone && (
+              <Button size="lg" className="gap-2">
+                <Phone className="w-4 h-4" />
+                Call Now
+              </Button>
+            )}
+            {business.website && (
+              <Button size="lg" variant="outline" className="gap-2">
+                <Globe className="w-4 h-4" />
+                Visit Website
+              </Button>
+            )}
+          </div>
+
+          <UserReviews reviews={mockReviews} />
+          <SimilarBusinesses currentBusinessId={business.id} />
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 export default BusinessProfile;
