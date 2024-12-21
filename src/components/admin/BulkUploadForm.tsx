@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Upload, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Upload, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Papa from 'papaparse';
+import { VariableMapping } from "./bulk-upload/VariableMapping";
+import { DataPreview } from "./bulk-upload/DataPreview";
 
 interface PreviewData {
   headers: string[];
@@ -18,9 +19,15 @@ export const BulkUploadForm = () => {
   const [mappings, setMappings] = useState({
     businessName: "",
     category: "",
-    contact: "",
+    address: "",
     description: "",
+    phone: "",
     slug: "",
+    website: "",
+    imageUrl: "",
+    rating: "",
+    seoTitle: "",
+    seoDescription: "",
   });
   const { toast } = useToast();
 
@@ -50,6 +57,25 @@ export const BulkUploadForm = () => {
     });
   };
 
+  const handleMappingChange = (key: string, value: string) => {
+    setMappings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const validateMappings = () => {
+    const required = ["businessName", "category", "description"];
+    const missing = required.filter(field => !mappings[field as keyof typeof mappings]);
+    
+    if (missing.length > 0) {
+      toast({
+        title: "Missing Required Fields",
+        description: `Please map the following fields: ${missing.join(", ")}`,
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleUpload = () => {
     if (!file || !validateMappings()) return;
 
@@ -67,9 +93,15 @@ export const BulkUploadForm = () => {
         setMappings({
           businessName: "",
           category: "",
-          contact: "",
+          address: "",
           description: "",
+          phone: "",
           slug: "",
+          website: "",
+          imageUrl: "",
+          rating: "",
+          seoTitle: "",
+          seoDescription: "",
         });
       },
       header: true,
@@ -83,21 +115,6 @@ export const BulkUploadForm = () => {
         setUploading(false);
       }
     });
-  };
-
-  const validateMappings = () => {
-    const required = ["businessName", "category", "description"];
-    const missing = required.filter(field => !mappings[field as keyof typeof mappings]);
-    
-    if (missing.length > 0) {
-      toast({
-        title: "Missing Required Fields",
-        description: `Please map the following fields: ${missing.join(", ")}`,
-        variant: "destructive",
-      });
-      return false;
-    }
-    return true;
   };
 
   return (
@@ -129,64 +146,12 @@ export const BulkUploadForm = () => {
         <Card className="mt-6">
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold mb-4">Map CSV Columns</h3>
-            <div className="grid gap-4">
-              {Object.entries({
-                businessName: "Business Name",
-                category: "Category",
-                contact: "Contact Information",
-                description: "Description",
-                slug: "URL Slug",
-              }).map(([key, label]) => (
-                <div key={key} className="flex items-center gap-4">
-                  <span className="w-40">{label}:</span>
-                  <Select
-                    value={mappings[key as keyof typeof mappings]}
-                    onValueChange={(value) => 
-                      setMappings(prev => ({ ...prev, [key]: value }))
-                    }
-                  >
-                    <SelectTrigger className="w-60">
-                      <SelectValue placeholder={`Select ${label} column`} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {preview.headers.map((header) => (
-                        <SelectItem key={header} value={header}>
-                          {header}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6">
-              <h4 className="font-semibold mb-2">Preview</h4>
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-border">
-                  <thead>
-                    <tr>
-                      {preview.headers.map((header) => (
-                        <th key={header} className="px-4 py-2 text-left text-sm font-medium text-muted-foreground">
-                          {header}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {preview.rows.map((row, i) => (
-                      <tr key={i}>
-                        {row.map((cell, j) => (
-                          <td key={j} className="px-4 py-2 text-sm">
-                            {cell}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <VariableMapping 
+              headers={preview.headers}
+              mappings={mappings}
+              onMappingChange={handleMappingChange}
+            />
+            <DataPreview headers={preview.headers} rows={preview.rows} />
           </CardContent>
         </Card>
       )}

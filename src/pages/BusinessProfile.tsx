@@ -3,10 +3,8 @@ import { Phone, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BusinessDetails } from "@/components/business/BusinessDetails";
 import { LocationBreadcrumb } from "@/components/business/LocationBreadcrumb";
-import { SimilarBusinesses } from "@/components/business/SimilarBusinesses";
 import { UserReviews } from "@/components/business/UserReviews";
-import Navigation from "@/components/Navigation";
-import Footer from "@/components/Footer";
+import { SimilarBusinesses } from "@/components/business/SimilarBusinesses";
 
 export const mockBusinesses = [
   {
@@ -119,8 +117,7 @@ const BusinessProfile = () => {
   const business = mockBusinesses.find((b) => b.id === id) || mockBusinesses[0];
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Navigation />
+    <div className="min-h-screen bg-background">
       <div className="bg-accent/10 py-4">
         <div className="container max-w-6xl mx-auto px-4">
           <LocationBreadcrumb 
@@ -152,7 +149,6 @@ const BusinessProfile = () => {
           <SimilarBusinesses currentBusinessId={business.id} />
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
