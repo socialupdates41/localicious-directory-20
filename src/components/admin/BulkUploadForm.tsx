@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Upload, CheckCircle } from "lucide-react";
+import { Upload, CheckCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import Papa from 'papaparse';
 import { VariableMapping } from "./bulk-upload/VariableMapping";
 import { DataPreview } from "./bulk-upload/DataPreview";
+import { Badge } from "@/components/ui/badge";
 
 interface PreviewData {
   headers: string[];
@@ -119,52 +120,83 @@ export const BulkUploadForm = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          className="relative"
-          disabled={uploading}
-        >
-          <input
-            type="file"
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            accept=".csv"
-            onChange={handleFileChange}
-          />
-          <Upload className="w-4 h-4 mr-2" />
-          Select CSV File
-        </Button>
-        {file && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <CheckCircle className="w-4 h-4 text-green-500" />
-            {file.name}
+      <Card className="bg-white shadow-lg">
+        <CardContent className="p-6">
+          <div className="flex items-center gap-4 mb-6">
+            <Button
+              variant="outline"
+              className="relative hover:bg-primary hover:text-white transition-colors"
+              disabled={uploading}
+            >
+              <input
+                type="file"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                accept=".csv"
+                onChange={handleFileChange}
+              />
+              <Upload className="w-4 h-4 mr-2" />
+              Select CSV File
+            </Button>
+            {file && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <CheckCircle className="w-4 h-4 text-green-500" />
+                {file.name}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setFile(null);
+                    setPreview(null);
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            )}
           </div>
-        )}
-      </div>
 
-      {preview && (
-        <Card className="mt-6">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-semibold mb-4">Map CSV Columns</h3>
-            <VariableMapping 
-              headers={preview.headers}
-              mappings={mappings}
-              onMappingChange={handleMappingChange}
-            />
-            <DataPreview headers={preview.headers} rows={preview.rows} />
-          </CardContent>
-        </Card>
-      )}
+          {preview && (
+            <>
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Map CSV Columns</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-sm text-muted-foreground">Required Fields</h4>
+                    <VariableMapping
+                      headers={preview.headers}
+                      mappings={mappings}
+                      onMappingChange={handleMappingChange}
+                      required={["businessName", "category", "description"]}
+                    />
+                  </div>
+                  <div className="space-y-4">
+                    <h4 className="font-medium text-sm text-muted-foreground">Optional Fields</h4>
+                    <VariableMapping
+                      headers={preview.headers}
+                      mappings={mappings}
+                      onMappingChange={handleMappingChange}
+                      optional={["phone", "website", "imageUrl", "rating", "seoTitle", "seoDescription"]}
+                    />
+                  </div>
+                </div>
+              </div>
 
-      {file && (
-        <Button
-          onClick={handleUpload}
-          disabled={uploading}
-          className="w-full sm:w-auto"
-        >
-          {uploading ? "Uploading..." : "Upload Businesses"}
-        </Button>
-      )}
+              <div className="mb-8">
+                <h3 className="text-lg font-semibold mb-4">Data Preview</h3>
+                <DataPreview headers={preview.headers} rows={preview.rows} />
+              </div>
+
+              <Button
+                onClick={handleUpload}
+                disabled={uploading}
+                className="w-full bg-primary hover:bg-primary/90 text-white"
+              >
+                {uploading ? "Uploading..." : "Upload Businesses"}
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -1,37 +1,53 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface VariableMappingProps {
   headers: string[];
   mappings: Record<string, string>;
   onMappingChange: (key: string, value: string) => void;
+  required?: string[];
+  optional?: string[];
 }
 
-export const VariableMapping = ({ headers, mappings, onMappingChange }: VariableMappingProps) => {
-  const fields = [
-    { key: "businessName", label: "Business Name" },
-    { key: "category", label: "Category" },
-    { key: "address", label: "Address" },
-    { key: "description", label: "Description" },
-    { key: "phone", label: "Phone" },
-    { key: "slug", label: "URL Slug" },
-    { key: "website", label: "Website" },
-    { key: "imageUrl", label: "Image URL" },
-    { key: "rating", label: "Rating" },
-    { key: "seoTitle", label: "SEO Title" },
-    { key: "seoDescription", label: "SEO Description" },
-  ];
+const fieldLabels: Record<string, string> = {
+  businessName: "Business Name",
+  category: "Category",
+  address: "Address",
+  description: "Description",
+  phone: "Phone",
+  slug: "URL Slug",
+  website: "Website",
+  imageUrl: "Image URL",
+  rating: "Rating",
+  seoTitle: "SEO Title",
+  seoDescription: "SEO Description",
+};
+
+export const VariableMapping = ({ 
+  headers, 
+  mappings, 
+  onMappingChange,
+  required = [],
+  optional = []
+}: VariableMappingProps) => {
+  const fields = required.concat(optional);
 
   return (
-    <div className="grid gap-4">
-      {fields.map(({ key, label }) => (
+    <div className="space-y-4">
+      {fields.map((key) => (
         <div key={key} className="flex items-center gap-4">
-          <span className="w-40">{label}:</span>
+          <div className="w-40 flex items-center gap-2">
+            <span className="text-sm font-medium">{fieldLabels[key]}</span>
+            {required.includes(key) && (
+              <Badge variant="secondary" className="text-xs">Required</Badge>
+            )}
+          </div>
           <Select
             value={mappings[key]}
             onValueChange={(value) => onMappingChange(key, value)}
           >
             <SelectTrigger className="w-60">
-              <SelectValue placeholder={`Select ${label} column`} />
+              <SelectValue placeholder={`Select ${fieldLabels[key]} column`} />
             </SelectTrigger>
             <SelectContent>
               {headers.map((header) => (
