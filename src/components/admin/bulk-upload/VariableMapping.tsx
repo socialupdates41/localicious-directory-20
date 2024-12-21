@@ -15,6 +15,7 @@ const fieldLabels: Record<string, string> = {
   address: "Address",
   description: "Description",
   phone: "Phone",
+  email: "Email",
   slug: "URL Slug",
   website: "Website",
   imageUrl: "Image URL",

@@ -1,17 +1,20 @@
 import { useState } from "react";
-import { Upload, CheckCircle, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Papa from 'papaparse';
+import { FileUploader } from "./bulk-upload/FileUploader";
+import { MappingInstructions } from "./bulk-upload/MappingInstructions";
 import { VariableMapping } from "./bulk-upload/VariableMapping";
+import { SEOFields } from "./bulk-upload/SEOFields";
 import { DataPreview } from "./bulk-upload/DataPreview";
-import { Badge } from "@/components/ui/badge";
 
 interface PreviewData {
   headers: string[];
   rows: string[][];
 }
+
+const DEFAULT_PLACEHOLDER_IMAGE = "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d";
 
 export const BulkUploadForm = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -23,6 +26,7 @@ export const BulkUploadForm = () => {
     address: "",
     description: "",
     phone: "",
+    email: "",
     slug: "",
     website: "",
     imageUrl: "",
@@ -30,21 +34,8 @@ export const BulkUploadForm = () => {
     seoTitle: "",
     seoDescription: "",
   });
-  const { toast } = useToast();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile && selectedFile.type === "text/csv") {
-      setFile(selectedFile);
-      parsePreview(selectedFile);
-    } else {
-      toast({
-        title: "Invalid file type",
-        description: "Please select a CSV file",
-        variant: "destructive",
-      });
-    }
-  };
+  const { toast } = useToast();
 
   const parsePreview = (file: File) => {
     Papa.parse(file, {
@@ -77,17 +68,29 @@ export const BulkUploadForm = () => {
     return true;
   };
 
+  const processBusinessData = (data: any[]) => {
+    return data.map(row => ({
+      ...row,
+      imageUrl: row.imageUrl || DEFAULT_PLACEHOLDER_IMAGE,
+      slug: row.slug || row.businessName.toLowerCase().replace(/\s+/g, '-'),
+      rating: parseFloat(row.rating) || 0,
+    }));
+  };
+
   const handleUpload = () => {
     if (!file || !validateMappings()) return;
 
     setUploading(true);
     Papa.parse(file, {
       complete: (results) => {
-        console.log('Parsed CSV:', results.data);
+        const processedData = processBusinessData(results.data as any[]);
+        console.log('Processed business data:', processedData);
+        
         toast({
           title: "Upload Successful",
-          description: `${results.data.length - 1} businesses uploaded successfully`,
+          description: `${processedData.length - 1} businesses uploaded successfully`,
         });
+        
         setUploading(false);
         setFile(null);
         setPreview(null);
@@ -97,6 +100,7 @@ export const BulkUploadForm = () => {
           address: "",
           description: "",
           phone: "",
+          email: "",
           slug: "",
           website: "",
           imageUrl: "",
@@ -107,10 +111,10 @@ export const BulkUploadForm = () => {
       },
       header: true,
       error: (error) => {
-        console.error('Error parsing CSV:', error);
+        console.error('Error parsing file:', error);
         toast({
           title: "Upload Failed",
-          description: "Error parsing CSV file",
+          description: "Error parsing file",
           variant: "destructive",
         });
         setUploading(false);
@@ -120,48 +124,23 @@ export const BulkUploadForm = () => {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white shadow-lg">
-        <CardContent className="p-6">
-          <div className="flex items-center gap-4 mb-6">
-            <Button
-              variant="outline"
-              className="relative hover:bg-primary hover:text-white transition-colors"
-              disabled={uploading}
-            >
-              <input
-                type="file"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                accept=".csv"
-                onChange={handleFileChange}
-              />
-              <Upload className="w-4 h-4 mr-2" />
-              Select CSV File
-            </Button>
-            {file && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle className="w-4 h-4 text-green-500" />
-                {file.name}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setFile(null);
-                    setPreview(null);
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            )}
-          </div>
+      <Card className="bg-white shadow-lg border-accent">
+        <CardContent className="p-6 space-y-6">
+          <FileUploader
+            file={file}
+            setFile={setFile}
+            onFileSelect={parsePreview}
+            uploading={uploading}
+          />
 
           {preview && (
             <>
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-4">Map CSV Columns</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm text-muted-foreground">Required Fields</h4>
+              <MappingInstructions />
+
+              <div className="grid gap-8 md:grid-cols-2">
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-4">Required Fields</h4>
                     <VariableMapping
                       headers={preview.headers}
                       mappings={mappings}
@@ -169,21 +148,30 @@ export const BulkUploadForm = () => {
                       required={["businessName", "category", "description"]}
                     />
                   </div>
-                  <div className="space-y-4">
-                    <h4 className="font-medium text-sm text-muted-foreground">Optional Fields</h4>
+
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-4">Optional Fields</h4>
                     <VariableMapping
                       headers={preview.headers}
                       mappings={mappings}
                       onMappingChange={handleMappingChange}
-                      optional={["phone", "website", "imageUrl", "rating", "seoTitle", "seoDescription"]}
+                      optional={["phone", "email", "website", "imageUrl", "rating"]}
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className="mb-8">
-                <h3 className="text-lg font-semibold mb-4">Data Preview</h3>
-                <DataPreview headers={preview.headers} rows={preview.rows} />
+                <div className="space-y-6">
+                  <SEOFields
+                    headers={preview.headers}
+                    mappings={mappings}
+                    onMappingChange={handleMappingChange}
+                  />
+
+                  <div>
+                    <h4 className="font-medium text-sm text-muted-foreground mb-4">Data Preview</h4>
+                    <DataPreview headers={preview.headers} rows={preview.rows} />
+                  </div>
+                </div>
               </div>
 
               <Button

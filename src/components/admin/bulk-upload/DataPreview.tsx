@@ -5,11 +5,11 @@ interface DataPreviewProps {
 
 export const DataPreview = ({ headers, rows }: DataPreviewProps) => {
   return (
-    <div className="rounded-lg border bg-card">
+    <div className="rounded-lg border border-accent overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b bg-accent/50">
+            <tr className="bg-accent/50">
               {headers.map((header) => (
                 <th key={header} className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">
                   {header}
