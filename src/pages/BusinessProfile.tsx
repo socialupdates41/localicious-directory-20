@@ -8,7 +8,7 @@ import { UserReviews } from "@/components/business/UserReviews";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 
-const mockBusinesses = [
+export const mockBusinesses = [
   {
     id: "1",
     name: "The Coffee House",
